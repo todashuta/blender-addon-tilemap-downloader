@@ -1,0 +1,3 @@
+# blender-addon-gsitiles2staticmap
+
+Blenderで特定のズームレベルの地理院タイルを取得して結合した画像を生成するアドオン
