@@ -12,12 +12,12 @@ import pprint
 
 
 bl_info = {
-    "name": "GSI Tile To Static Map",
+    "name": "Tile Map Downloader",
     "author": "Toda Shuta",
     "version": (1, 0, 0),
     "blender": (2, 79, 0),
     "location": "Image Editor",
-    "description": "GSI Tile To Static Map",
+    "description": "Download and Stitching Tile Map",
     "warning": "",
     "wiki_url": "",
     "tracker_url": "",
@@ -25,12 +25,12 @@ bl_info = {
 }
 
 
-bpy.types.Scene.gsitiletostaticmap_zoomlevel    = IntProperty(name="ズームレベル", default=18)
-bpy.types.Scene.gsitiletostaticmap_topleftX     = IntProperty(name="左上タイルX",  default=229732)
-bpy.types.Scene.gsitiletostaticmap_topleftY     = IntProperty(name="左上タイルY",  default=104096)
-bpy.types.Scene.gsitiletostaticmap_bottomrightX = IntProperty(name="右下タイルX",  default=229740)
-bpy.types.Scene.gsitiletostaticmap_bottomrightY = IntProperty(name="右下タイルY",  default=104101)
-bpy.types.Scene.gsitiletostaticmap_urlfmt       = StringProperty(name="URL形式",   default="https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg")
+bpy.types.Scene.tilemapdownloader_zoomlevel    = IntProperty(name="ズームレベル", default=18)
+bpy.types.Scene.tilemapdownloader_topleftX     = IntProperty(name="左上タイルX",  default=229732)
+bpy.types.Scene.tilemapdownloader_topleftY     = IntProperty(name="左上タイルY",  default=104096)
+bpy.types.Scene.tilemapdownloader_bottomrightX = IntProperty(name="右下タイルX",  default=229740)
+bpy.types.Scene.tilemapdownloader_bottomrightY = IntProperty(name="右下タイルY",  default=104101)
+bpy.types.Scene.tilemapdownloader_urlfmt       = StringProperty(name="URL形式",   default="https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg")
 
 
 def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrightY):
@@ -131,34 +131,34 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
     report({"INFO"}, "UV/画像エディターで {} を見てください".format(pprint.pformat(combined_img.name)))
 
 
-class GsiTileToStaticMap(bpy.types.Operator):
-    bl_idname = "object.gsitiletostaticmap"
-    bl_label = "GSI Tile To Static Map"
+class TileMapDownloader(bpy.types.Operator):
+    bl_idname = "object.tilemapdownloader"
+    bl_label = "Download and Stitching Tile Map"
 
     @classmethod
     def poll(cls, context):
         scene = context.scene
-        if not scene.gsitiletostaticmap_topleftX < scene.gsitiletostaticmap_bottomrightX:
+        if not scene.tilemapdownloader_topleftX < scene.tilemapdownloader_bottomrightX:
             return False
-        if not scene.gsitiletostaticmap_topleftY < scene.gsitiletostaticmap_bottomrightY:
+        if not scene.tilemapdownloader_topleftY < scene.tilemapdownloader_bottomrightY:
             return False
         return True
 
     def execute(self, context):
         scene = context.scene
         main(self.report,
-                scene.gsitiletostaticmap_urlfmt,
-                scene.gsitiletostaticmap_zoomlevel,
-                scene.gsitiletostaticmap_topleftX, scene.gsitiletostaticmap_topleftY,
-                scene.gsitiletostaticmap_bottomrightX, scene.gsitiletostaticmap_bottomrightY)
+                scene.tilemapdownloader_urlfmt,
+                scene.tilemapdownloader_zoomlevel,
+                scene.tilemapdownloader_topleftX, scene.tilemapdownloader_topleftY,
+                scene.tilemapdownloader_bottomrightX, scene.tilemapdownloader_bottomrightY)
         return {"FINISHED"}
 
 
-class GsiTileToStaticMapCustomMenu(bpy.types.Panel):
+class TileMapDownloaderCustomMenu(bpy.types.Panel):
     bl_space_type = "IMAGE_EDITOR"
     bl_region_type = "TOOLS"
-    bl_label = "GSI Tile To Static Map"
-    bl_category = "GSI Tile"
+    bl_label = "Tile Map Downloader"
+    bl_category = "Tile Map"
     #bl_context = "mesh_edit"
     #bl_context = "objectmode"
 
@@ -171,17 +171,17 @@ class GsiTileToStaticMapCustomMenu(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.scene, "gsitiletostaticmap_urlfmt")
+        layout.prop(context.scene, "tilemapdownloader_urlfmt")
         layout.separator()
-        layout.prop(context.scene, "gsitiletostaticmap_zoomlevel")
+        layout.prop(context.scene, "tilemapdownloader_zoomlevel")
         layout.separator()
-        layout.prop(context.scene, "gsitiletostaticmap_topleftX")
-        layout.prop(context.scene, "gsitiletostaticmap_topleftY")
+        layout.prop(context.scene, "tilemapdownloader_topleftX")
+        layout.prop(context.scene, "tilemapdownloader_topleftY")
         layout.separator()
-        layout.prop(context.scene, "gsitiletostaticmap_bottomrightX")
-        layout.prop(context.scene, "gsitiletostaticmap_bottomrightY")
+        layout.prop(context.scene, "tilemapdownloader_bottomrightX")
+        layout.prop(context.scene, "tilemapdownloader_bottomrightY")
         layout.separator()
-        layout.operator(GsiTileToStaticMap.bl_idname, text="Generate Static Map Image")
+        layout.operator(TileMapDownloader.bl_idname, text=TileMapDownloader.bl_label)
 
 
 def register():
