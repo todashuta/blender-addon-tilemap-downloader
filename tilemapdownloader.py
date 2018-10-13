@@ -56,7 +56,7 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
     #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
     #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
     ext = os.path.splitext(urlfmt)[1]
-    tmp = tempfile.TemporaryFile(suffix=ext, delete=False).name
+    tmp = tempfile.mkstemp(suffix=ext)[1]
 
     # タイル座標は、
     # - 東方向がX正方向
