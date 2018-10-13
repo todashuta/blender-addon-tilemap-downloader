@@ -1,3 +1,3 @@
-# blender-addon-gsitiles2staticmap
+# blender-addon-tilemap-downloader
 
-Blenderで特定のズームレベルの地理院タイルを取得して結合した画像を生成するアドオン
+Blenderで特定のズームレベルのタイルマップ(地図タイル)を取得し結合した画像を生成します
