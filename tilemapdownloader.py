@@ -171,15 +171,16 @@ class TileMapDownloaderCustomMenu(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(context.scene, "tilemapdownloader_urlfmt")
+        scene = context.scene
+        layout.prop(scene, "tilemapdownloader_urlfmt")
         layout.separator()
-        layout.prop(context.scene, "tilemapdownloader_zoomlevel")
+        layout.prop(scene, "tilemapdownloader_zoomlevel")
         layout.separator()
-        layout.prop(context.scene, "tilemapdownloader_topleftX")
-        layout.prop(context.scene, "tilemapdownloader_topleftY")
+        layout.prop(scene, "tilemapdownloader_topleftX")
+        layout.prop(scene, "tilemapdownloader_topleftY")
         layout.separator()
-        layout.prop(context.scene, "tilemapdownloader_bottomrightX")
-        layout.prop(context.scene, "tilemapdownloader_bottomrightY")
+        layout.prop(scene, "tilemapdownloader_bottomrightX")
+        layout.prop(scene, "tilemapdownloader_bottomrightY")
         layout.separator()
         layout.operator(TileMapDownloader.bl_idname, text=TileMapDownloader.bl_label)
 
