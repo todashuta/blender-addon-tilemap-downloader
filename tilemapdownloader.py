@@ -206,19 +206,22 @@ class TileMapDownloaderCustomMenu(bpy.types.Panel):
         layout.prop(scene, "tilemapdownloader_bottomrightX")
         layout.prop(scene, "tilemapdownloader_bottomrightY")
         layout.separator()
-        if TileMapDownloader.poll(context):
-            layout.label(icon="INFO", text="{}x{} pixels".format(
-                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1)*256,
-                    (scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1)*256
-                    ))
+
+        topleftX = scene.tilemapdownloader_topleftX
+        bottomrightX = scene.tilemapdownloader_bottomrightX
+        topleftY = scene.tilemapdownloader_topleftY
+        bottomrightY = scene.tilemapdownloader_bottomrightY
+        num_tiles_x = bottomrightX-topleftX+1
+        num_tiles_y = bottomrightY-topleftY+1
+        if num_tiles_x > 0 and num_tiles_y > 0:
             layout.label(icon="INFO", text="{}x{}={} tiles".format(
-                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1),
-                    (scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1),
-                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1)*(scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1)
-                    ))
+                    num_tiles_x, num_tiles_y, num_tiles_x*num_tiles_y))
+            layout.label(icon="INFO", text="{}x{} pixels".format(
+                    num_tiles_x*256, num_tiles_y*256))
         else:
-            layout.label(icon="INFO", text="--")
-            layout.label(icon="INFO", text="--")
+            layout.label(icon="INFO", text="0 tiles")
+            layout.label(icon="INFO", text="0 pixels")
+
         layout.separator()
         layout.operator(TileMapDownloader.bl_idname, text=TileMapDownloader.bl_label)
 
