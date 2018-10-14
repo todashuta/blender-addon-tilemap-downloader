@@ -1,7 +1,7 @@
 from urllib import request
 import bpy
 
-from bpy.props import IntProperty, StringProperty
+from bpy.props import IntProperty, StringProperty, EnumProperty, BoolProperty
 
 import numpy as np
 
@@ -14,7 +14,7 @@ import pprint
 bl_info = {
     "name": "Tile Map Downloader",
     "author": "Toda Shuta",
-    "version": (1, 0, 1),
+    "version": (1, 1, 0),
     "blender": (2, 79, 0),
     "location": "Image Editor",
     "description": "Download and Stitching Tile Map",
@@ -25,12 +25,21 @@ bl_info = {
 }
 
 
-bpy.types.Scene.tilemapdownloader_zoomlevel    = IntProperty(name="ズームレベル", default=18)
-bpy.types.Scene.tilemapdownloader_topleftX     = IntProperty(name="左上タイルX",  default=229732)
-bpy.types.Scene.tilemapdownloader_topleftY     = IntProperty(name="左上タイルY",  default=104096)
-bpy.types.Scene.tilemapdownloader_bottomrightX = IntProperty(name="右下タイルX",  default=229740)
-bpy.types.Scene.tilemapdownloader_bottomrightY = IntProperty(name="右下タイルY",  default=104101)
-bpy.types.Scene.tilemapdownloader_urlfmt       = StringProperty(name="URL形式",   default="https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg")
+bpy.types.Scene.tilemapdownloader_zoomlevel      = IntProperty(name="ズームレベル", default=18)
+bpy.types.Scene.tilemapdownloader_topleftX       = IntProperty(name="左上タイルX",  default=229732)
+bpy.types.Scene.tilemapdownloader_topleftY       = IntProperty(name="左上タイルY",  default=104096)
+bpy.types.Scene.tilemapdownloader_bottomrightX   = IntProperty(name="右下タイルX",  default=229740)
+bpy.types.Scene.tilemapdownloader_bottomrightY   = IntProperty(name="右下タイルY",  default=104101)
+bpy.types.Scene.tilemapdownloader_custom_url     = StringProperty(name="カスタムURL", default="", description="{z} がズームレベル、 {x} がX座標の値、 {y} がY座標の値に置き換えられます")
+bpy.types.Scene.tilemapdownloader_use_custom_url = BoolProperty(name="カスタムURLを使用", default=False)
+bpy.types.Scene.tilemapdownloader_url_preset     = EnumProperty(
+        name="URLプリセット",
+        items=[
+            ("https://tile.openstreetmap.org/{z}/{x}/{y}.png",                     "OpenStreetMap Standard Tile Layer",       ""),
+            ("https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png",           "地理院タイル 標準地図",                   ""),
+            ("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg", "地理院タイル 全国最新写真（シームレス）", ""),
+        ],
+        default="https://tile.openstreetmap.org/{z}/{x}/{y}.png")
 
 
 def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrightY):
@@ -53,7 +62,6 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
     combined_x_px = (bottomrightX-topleftX+1)*256
     combined_y_px = (bottomrightY-topleftY+1)*256
 
-    #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
     #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
     ext = os.path.splitext(urlfmt)[1]
     fd, tmpfname = tempfile.mkstemp(suffix=ext)
@@ -143,12 +151,19 @@ class TileMapDownloader(bpy.types.Operator):
             return False
         if not scene.tilemapdownloader_topleftY < scene.tilemapdownloader_bottomrightY:
             return False
+        if scene.tilemapdownloader_use_custom_url and scene.tilemapdownloader_custom_url == "":
+            return False
         return True
 
     def execute(self, context):
         scene = context.scene
+        if scene.tilemapdownloader_use_custom_url:
+            urlfmt = scene.tilemapdownloader_custom_url
+        else:
+            urlfmt = scene.tilemapdownloader_url_preset
+
         main(self.report,
-                scene.tilemapdownloader_urlfmt,
+                urlfmt,
                 scene.tilemapdownloader_zoomlevel,
                 scene.tilemapdownloader_topleftX, scene.tilemapdownloader_topleftY,
                 scene.tilemapdownloader_bottomrightX, scene.tilemapdownloader_bottomrightY)
@@ -173,7 +188,15 @@ class TileMapDownloaderCustomMenu(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        layout.prop(scene, "tilemapdownloader_urlfmt")
+        layout.prop(scene, "tilemapdownloader_use_custom_url")
+        row = layout.row()
+        row.prop(scene, "tilemapdownloader_custom_url")
+        if not scene.tilemapdownloader_use_custom_url:
+            row.enabled = False
+        row = layout.row()
+        row.prop(scene, "tilemapdownloader_url_preset")
+        if scene.tilemapdownloader_use_custom_url:
+            row.enabled = False
         layout.separator()
         layout.prop(scene, "tilemapdownloader_zoomlevel")
         layout.separator()
