@@ -14,7 +14,7 @@ import pprint
 bl_info = {
     "name": "Tile Map Downloader",
     "author": "Toda Shuta",
-    "version": (1, 1, 0),
+    "version": (1, 2, 0),
     "blender": (2, 79, 0),
     "location": "Image Editor",
     "description": "Download and Stitching Tile Map",
