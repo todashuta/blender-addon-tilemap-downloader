@@ -147,9 +147,9 @@ class TileMapDownloader(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         scene = context.scene
-        if not scene.tilemapdownloader_topleftX < scene.tilemapdownloader_bottomrightX:
+        if not scene.tilemapdownloader_topleftX <= scene.tilemapdownloader_bottomrightX:
             return False
-        if not scene.tilemapdownloader_topleftY < scene.tilemapdownloader_bottomrightY:
+        if not scene.tilemapdownloader_topleftY <= scene.tilemapdownloader_bottomrightY:
             return False
         if scene.tilemapdownloader_use_custom_url and scene.tilemapdownloader_custom_url == "":
             return False
