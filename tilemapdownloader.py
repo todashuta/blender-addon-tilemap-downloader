@@ -206,6 +206,20 @@ class TileMapDownloaderCustomMenu(bpy.types.Panel):
         layout.prop(scene, "tilemapdownloader_bottomrightX")
         layout.prop(scene, "tilemapdownloader_bottomrightY")
         layout.separator()
+        if TileMapDownloader.poll(context):
+            layout.label(icon="INFO", text="{}x{} pixels".format(
+                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1)*256,
+                    (scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1)*256
+                    ))
+            layout.label(icon="INFO", text="{}x{}={} tiles".format(
+                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1),
+                    (scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1),
+                    (scene.tilemapdownloader_bottomrightX-scene.tilemapdownloader_topleftX+1)*(scene.tilemapdownloader_bottomrightY-scene.tilemapdownloader_topleftY+1)
+                    ))
+        else:
+            layout.label(icon="INFO", text="--")
+            layout.label(icon="INFO", text="--")
+        layout.separator()
         layout.operator(TileMapDownloader.bl_idname, text=TileMapDownloader.bl_label)
 
 
