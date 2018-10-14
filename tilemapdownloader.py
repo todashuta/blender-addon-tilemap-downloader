@@ -56,7 +56,7 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
     #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png"
     #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
     ext = os.path.splitext(urlfmt)[1]
-    fd, tmp = tempfile.mkstemp(suffix=ext)
+    fd, tmpfname = tempfile.mkstemp(suffix=ext)
 
     # タイル座標は、
     # - 東方向がX正方向
@@ -77,8 +77,8 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
         for x in range(topleftX, bottomrightX+1):
             #print(zoomlevel, x, y)
             url = urlfmt.replace("{z}", str(zoomlevel)).replace("{x}", str(x)).replace("{y}", str(y))
-            request.urlretrieve(url, tmp)
-            img = bpy.data.images.load(tmp)
+            request.urlretrieve(url, tmpfname)
+            img = bpy.data.images.load(tmpfname)
             tiletype = re.search("([^/]+)/\d+/\d+/\d+\.\w+$", url).group(1)
             img.name = "{}-{}-{}-{}".format(tiletype,zoomlevel,x,y)
             img.use_fake_user = True
@@ -88,7 +88,7 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
             print(img.name)
 
     os.close(fd)
-    os.remove(tmp)
+    os.remove(tmpfname)
 
     #print(tiles)
 
