@@ -14,7 +14,7 @@ import pprint
 bl_info = {
     "name": "Tile Map Downloader",
     "author": "Toda Shuta",
-    "version": (1, 2, 0),
+    "version": (1, 3, 0),
     "blender": (2, 79, 0),
     "location": "Image Editor",
     "description": "Download and Stitching Tile Map",
@@ -45,24 +45,15 @@ bpy.types.Scene.tilemapdownloader_url_preset     = EnumProperty(
 def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrightY):
     tiles = []
 
-    #zoomlevel = 18
-    #topleftX = 229732
-    #topleftY = 104096
-    #bottomrightX = 229740
-    #bottomrightY = 104101
-
-    '''
-    zoomlevel = 17
-    topleftX = 114895
-    topleftY = 52023
-    bottomrightX = 114906
-    bottomrightY = 52034
-    '''
+    num_tiles = (bottomrightX-topleftX+1)*(bottomrightY-topleftY+1)
+    wm = bpy.context.window_manager
+    wm.progress_begin(0, num_tiles)
+    download_progress = 0
+    wm.progress_update(download_progress)
 
     combined_x_px = (bottomrightX-topleftX+1)*256
     combined_y_px = (bottomrightY-topleftY+1)*256
 
-    #urlfmt = "https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg"
     ext = os.path.splitext(urlfmt)[1]
     fd, tmpfname = tempfile.mkstemp(suffix=ext)
 
@@ -94,9 +85,12 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
             img.filepath = ""
             tiles.append(img)
             print(img.name)
+            download_progress += 1
+            wm.progress_update(download_progress)
 
     os.close(fd)
     os.remove(tmpfname)
+    wm.progress_end()
 
     #print(tiles)
 
@@ -109,6 +103,7 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
     combined_B = combined_pxs[::,2::4]
     combined_A = combined_pxs[::,3::4]
 
+    wm.progress_begin(0, num_tiles)
     tile_idx = 0
     for yy in range(0,combined_y_px,256):
         for xx in range(0,combined_x_px,256):
@@ -124,6 +119,7 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
             tile_B = tile_pxs[::,2::4]
             tile_A = tile_pxs[::,3::4]
             tile_idx += 1
+            wm.progress_update(tile_idx)
 
             for y in range(256):
                 for x in range(256):
@@ -131,6 +127,8 @@ def main(report, urlfmt, zoomlevel, topleftX, topleftY, bottomrightX, bottomrigh
                     combined_G[y+yy][x+xx] = tile_G[y][x]
                     combined_B[y+yy][x+xx] = tile_B[y][x]
                     combined_A[y+yy][x+xx] = tile_A[y][x]
+
+    wm.progress_end()
 
     combined_pxs = combined_pxs.flatten()
     combined_img.pixels = combined_pxs
