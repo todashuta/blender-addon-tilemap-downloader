@@ -14,7 +14,7 @@ bl_info = {
 
 if "bpy" in locals():
     import importlib
-    importlib.reload()
+    importlib.reload(tilemapdownloader)
 else:
     from . import tilemapdownloader
 
