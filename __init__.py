@@ -1,7 +1,7 @@
 bl_info = {
     "name": "Tile Map Downloader",
     "author": "Toda Shuta",
-    "version": (1, 3, 1),
+    "version": (1, 3, 2),
     "blender": (2, 79, 0),
     "location": "Image Editor",
     "description": "Download and Stitching Tile Map",
@@ -14,7 +14,7 @@ bl_info = {
 
 if "bpy" in locals():
     import importlib
-    importlib.reload()
+    importlib.reload(tilemapdownloader)
 else:
     from . import tilemapdownloader
 
