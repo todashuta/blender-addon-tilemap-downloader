@@ -11,20 +11,6 @@ import re
 import pprint
 
 
-bl_info = {
-    "name": "Tile Map Downloader",
-    "author": "Toda Shuta",
-    "version": (1, 3, 0),
-    "blender": (2, 79, 0),
-    "location": "Image Editor",
-    "description": "Download and Stitching Tile Map",
-    "warning": "",
-    "wiki_url": "",
-    "tracker_url": "",
-    "category": "Image"
-}
-
-
 bpy.types.Scene.tilemapdownloader_zoomlevel      = IntProperty(name="ズームレベル", default=18)
 bpy.types.Scene.tilemapdownloader_topleftX       = IntProperty(name="左上タイルX",  default=229732)
 bpy.types.Scene.tilemapdownloader_topleftY       = IntProperty(name="左上タイルY",  default=104096)
@@ -222,15 +208,3 @@ class TileMapDownloaderCustomMenu(bpy.types.Panel):
 
         layout.separator()
         layout.operator(TileMapDownloader.bl_idname, text=TileMapDownloader.bl_label)
-
-
-def register():
-    bpy.utils.register_module(__name__)
-
-
-def unregister():
-    bpy.utils.unregister_module(__name__)
-
-
-if __name__ == "__main__":
-    register()
